@@ -98,7 +98,7 @@ module Routemaster
       @_conn ||= Faraday.new(@_url) do |f|
         f.use Faraday::Request::BasicAuthentication, @_uuid, 'x'
         f.adapter :net_http_persistent
-        f.options.timeout = @_timeout
+        f.options[:timeout] = @_timeout
       end
     end
   end
