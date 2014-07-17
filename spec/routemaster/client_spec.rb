@@ -34,7 +34,7 @@ describe Routemaster::Client do
     end
 
     it 'fails it it cannot connect' do
-      stub_request(:any, %r{^https://#{options[:uuid]}:x@bus.example.com}).to_raise(Faraday::ConnectionFailed)
+      stub_request(:any, %r{^https://#{options[:uuid]}:x@bus.example.com}).to_raise(Faraday::Error::ConnectionFailed)
       expect { subject }.to raise_error
     end
 
@@ -94,7 +94,7 @@ describe Routemaster::Client do
 
     it 'fails when the timeout is reached' do
       @stub.to_timeout
-      expect { perform }.to raise_error(Faraday::TimeoutError)
+      expect { perform }.to raise_error(Faraday::Error::TimeoutError)
     end
   end
 
