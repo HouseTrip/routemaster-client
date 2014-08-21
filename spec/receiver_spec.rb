@@ -36,6 +36,10 @@ describe Routemaster::Receiver do
     }].to_json
   end
 
+  it 'is deprecated' do
+    expect_any_instance_of(described_class).to receive(:warn).with(/deprecated/)
+    app
+  end
 
   it 'passes with valid HTTP Basic' do
     authorize 'demo', 'x'
@@ -75,12 +79,7 @@ describe Routemaster::Receiver do
       authorize 'demo', 'x'
       expect(handler).to receive(:on_events).exactly(3).times
       3.times { perform }
-    end
-    
-    it 'warns about deprecation' do
-      expect_any_instance_of(described_class).to receive(:warn).with(/deprecated/)
-      app
-    end
+    end 
   end
 
   context 'with a listener' do

@@ -61,32 +61,6 @@ client.subscribe(
   max:      500)
 ```
 
-
-**Receive** events at path `/events` using a Rack middleware:
-
-```ruby
-require 'routemaster/receiver'
-
-class Listener
-  def on_events_received(batch)
-    batch.each do |event|
-      puts event['url']
-    end
-  end
-end
-
-Wisper.add_listener(Listener.new, :prefix => true)
-
-use Routemaster::Receiver, {
-  path:    '/events',
-  uuid:    'demo'
-}
-```
-
-This relies on the excellent event bus from the [wisper
-gem](https://github.com/krisleech/wisper#wisper).
-
-
 **Monitor** the status of topics and subscriptions:
 
 ```ruby
@@ -104,7 +78,7 @@ client.monitor_subscriptions
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/routemaster_client/fork )
+1. Fork it ( http://github.com/housetrip/routemaster_client/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

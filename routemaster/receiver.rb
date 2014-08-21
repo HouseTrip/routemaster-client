@@ -9,14 +9,16 @@ module Routemaster
     include Wisper::Publisher
 
     def initialize(app, options = {})
+      warn [
+        '*' * 80,
+        'Routemaster::Receiver is deprecated.',
+        'Please use the routemaster-drain gem instead.',
+        '*' * 80
+      ].join("\n")
       @app     = app
       @path    = options[:path]
       @uuid    = options[:uuid]
-
-      if options[:handler]
-        warn 'the :handler option is deprecated, listen to the :events_received event instead'
-        @handler = options[:handler]
-      end
+      @handler = options[:handler]
     end
 
     def call(env)
