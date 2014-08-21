@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    routemaster-client (0.0.2)
+    routemaster-client (1.0.0)
       faraday
       net-http-persistent
       sinatra
