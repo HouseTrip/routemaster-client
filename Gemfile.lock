@@ -8,7 +8,7 @@ PATH
       wisper
 
 GEM
-  remote: http://eu.yarp.io/
+  remote: https://rubygems.org/
   specs:
     addressable (2.3.6)
     celluloid (0.15.2)
@@ -78,7 +78,7 @@ GEM
     webmock (1.18.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
-    wisper (1.3.0)
+    wisper (1.4.0)
 
 PLATFORMS
   ruby

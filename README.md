@@ -75,7 +75,7 @@ class Listener
   end
 end
 
-Wisper.add_listener(Listener.new, :prefix => true)
+Wisper.subscribe(Listener.new, :prefix => true)
 
 use Routemaster::Receiver, {
   path:    '/events',
