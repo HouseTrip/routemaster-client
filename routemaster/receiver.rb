@@ -1,4 +1,3 @@
-require 'sinatra'
 require 'rack/auth/basic'
 require 'base64'
 require 'json'
