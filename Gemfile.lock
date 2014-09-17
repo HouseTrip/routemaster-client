@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    routemaster-client (0.0.2)
+    routemaster-client (0.0.3)
       faraday
       net-http-persistent
-      wisper
+      wisper (>= 1.4.0)
 
 GEM
-  remote: https://rubygems.org/
+  remote: http://eu.yarp.io/
   specs:
     addressable (2.3.6)
     celluloid (0.15.2)

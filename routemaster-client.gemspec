@@ -18,5 +18,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency     'faraday'
   spec.add_runtime_dependency     'net-http-persistent'
-  spec.add_runtime_dependency     'wisper'
+  spec.add_runtime_dependency     'wisper', '>= 1.4.0'
 end
