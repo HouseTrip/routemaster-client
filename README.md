@@ -1,7 +1,14 @@
-# routemaster_client
+# routemaster-client
 
 A Ruby API for the [Routemaster](https://github.com/HouseTrip/routemaster) event
 bus.
+
+![Version](https://badge.fury.io/rb/routemaster-client.svg)
+&nbsp;
+![Build](https://travis-ci.org/HouseTrip/routemaster-client.svg?branch=master)
+&nbsp;
+[![](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/HouseTrip/routemaster-client/frames/file/README.md)
+
 
 ## Installation
 
