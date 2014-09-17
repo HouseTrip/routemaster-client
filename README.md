@@ -3,11 +3,11 @@
 A Ruby API for the [Routemaster](https://github.com/HouseTrip/routemaster) event
 bus.
 
-![Version](https://badge.fury.io/rb/routemaster-client.svg)
+[![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client)
 &nbsp;
-![Build](https://travis-ci.org/HouseTrip/routemaster-client.svg?branch=master)
+[![Build](https://travis-ci.org/HouseTrip/routemaster-client.svg?branch=master)](https://travis-ci.org/HouseTrip/routemaster-client)
 &nbsp;
-[![](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/HouseTrip/routemaster-client/frames/file/README.md)
+[![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/HouseTrip/routemaster-client/frames/file/README.md)
 
 
 ## Installation
