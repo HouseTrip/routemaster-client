@@ -30,13 +30,13 @@ Or install it yourself as:
 
 ```ruby
 require 'routemaster/client'
-client = RoutemasterClient.new(url: 'https://bus.example.com', uuid: 'john-doe')
+client = Routemaster::Client.new(url: 'https://bus.example.com', uuid: 'john-doe')
 ```
 
 You can also specify a timeout value in seconds if you like with the ```timeout``` option.
 
 ```ruby
-RoutemasterClient.new(url: 'https://bus.example.com', uuid: 'john-doe', timeout: 2)
+Routemaster::Client.new(url: 'https://bus.example.com', uuid: 'john-doe', timeout: 2)
 ```
 
 
