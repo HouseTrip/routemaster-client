@@ -33,9 +33,20 @@ describe Routemaster::Client do
       expect { subject }.to raise_error(ArgumentError)
     end
 
-    it 'fails it it cannot connect' do
-      stub_request(:any, %r{^https://#{options[:uuid]}:x@bus.example.com}).to_raise(Faraday::ConnectionFailed)
-      expect { subject }.to raise_error
+    context 'when connection fails' do
+      before do
+        stub_request(:any, %r{^https://#{options[:uuid]}:x@bus.example.com}).
+          to_raise(Faraday::ConnectionFailed)
+      end
+
+      it 'fails' do
+        expect { subject }.to raise_error
+      end
+
+      it 'passes if :lazy' do
+        options[:lazy] = true
+        expect { subject }.not_to raise_error
+      end
     end
 
     it 'fails if it does not get a successful heartbeat from the app' do
