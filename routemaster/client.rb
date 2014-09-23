@@ -47,10 +47,9 @@ module Routemaster
       options[:topics].each { |t| _assert_valid_topic(t) }
       _assert_valid_url(options[:callback])
 
-      data = options.to_json
       response = _post('/subscription') do |r|
         r.headers['Content-Type'] = 'application/json'
-        r.body = data
+        r.body = options.to_json
       end
       # $stderr.puts response.status
       unless response.success?
@@ -82,10 +81,10 @@ module Routemaster
     def _send_event(event, topic, callback)
       _assert_valid_url(callback)
       _assert_valid_topic(topic)
-      data = { type: event, url: callback }.to_json
+      data = { type: event, url: callback }
       response = _post("/topics/#{topic}") do |r|
         r.headers['Content-Type'] = 'application/json'
-        r.body = data
+        r.body = data.to_json
       end
       fail "event rejected (#{response.status})" unless response.success?
     end
@@ -107,9 +106,12 @@ module Routemaster
 
     def _conn
       @_conn ||= Faraday.new(@_url) do |f|
-        f.use Faraday::Request::BasicAuthentication, @_uuid, 'x'
+        f.request :retry, max: 2, interval: 100e-3, backoff_factor: 2
+        f.request :basic_auth, @_uuid, 'x'
         f.adapter :net_http_persistent
-        f.options[:timeout] = @_timeout
+
+        f.options.timeout      = @_timeout
+        f.options.open_timeout = @_timeout
       end
     end
   end
