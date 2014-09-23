@@ -14,8 +14,10 @@ module Routemaster
       _assert (options[:uuid] =~ /^[a-z0-9_-]{1,64}$/), 'uuid should be alpha'
       _assert_valid_timeout(@_timeout)
 
-      _conn.get('/pulse').tap do |response|
-        raise 'cannot connect to bus' unless response.success?
+      unless options[:lazy]
+        _conn.get('/pulse').tap do |response|
+          raise 'cannot connect to bus' unless response.success?
+        end
       end
     end
 
