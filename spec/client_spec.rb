@@ -109,7 +109,7 @@ describe Routemaster::Client do
     end
 
     context 'with explicit timestamp' do
-      let(:timestamp) { Time.now.to_i }
+      let(:timestamp) { Time.now.to_f }
       let(:perform)   { subject.send(event, topic, callback, timestamp) }
 
       before do
