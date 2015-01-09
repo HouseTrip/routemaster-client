@@ -62,8 +62,8 @@ describe Routemaster::Client do
 
   shared_examples 'an event sender' do
     let(:callback) { 'https://app.example.com/widgets/123' }
-    let(:topic) { 'widgets' }
-    let(:perform) { subject.send(event, topic, callback) }
+    let(:topic)    { 'widgets' }
+    let(:perform)  { subject.send(event, topic, callback) }
 
     before do
       @stub = stub_request(
@@ -106,6 +106,30 @@ describe Routemaster::Client do
     it 'fails when the timeout is reached' do
       @stub.to_timeout
       expect { perform }.to raise_error(Faraday::TimeoutError)
+    end
+
+    context 'with explicit timestamp' do
+      let(:timestamp) { Time.now.to_f }
+      let(:perform)   { subject.send(event, topic, callback, timestamp) }
+
+      before do
+        @stub = stub_request(
+          :post, "https://#{options[:uuid]}:x@bus.example.com/topics/widgets"
+        ).with(body: { type: anything, url: callback, timestamp: timestamp }, status: 200)
+      end
+
+      it 'sends the event' do
+        perform
+        expect(@stub).to have_been_requested
+      end
+
+      context 'with bad timestamp' do
+        let(:timestamp) { 'foo' }
+
+        it 'fails with non-numeric timestamp' do
+          expect { perform }.to raise_error
+        end
+      end
     end
   end
 

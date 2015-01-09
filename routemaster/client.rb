@@ -21,20 +21,20 @@ module Routemaster
       end
     end
 
-    def created(topic, callback)
-      _send_event('create', topic, callback)
+    def created(topic, callback, timestamp = nil)
+      _send_event('create', topic, callback, timestamp)
     end
 
-    def updated(topic, callback)
-      _send_event('update', topic, callback)
+    def updated(topic, callback, timestamp = nil)
+      _send_event('update', topic, callback, timestamp)
     end
 
-    def deleted(topic, callback)
-      _send_event('delete', topic, callback)
+    def deleted(topic, callback, timestamp = nil)
+      _send_event('delete', topic, callback, timestamp)
     end
 
-    def noop(topic, callback)
-      _send_event('noop', topic, callback)
+    def noop(topic, callback, timestamp = nil)
+      _send_event('noop', topic, callback, timestamp)
     end
 
     def subscribe(options = {})
@@ -80,10 +80,17 @@ module Routemaster
       _assert (topic =~ /^[a-z_]{1,32}$/), 'bad topic name'
     end
 
-    def _send_event(event, topic, callback)
+    def _assert_valid_timestamp(timestamp)
+      _assert timestamp.is_a?(Numeric), 'not a numeric number'
+    end
+
+    def _send_event(event, topic, callback, timestamp = nil)
       _assert_valid_url(callback)
       _assert_valid_topic(topic)
-      data = { type: event, url: callback }
+      _assert_valid_timestamp(timestamp) if timestamp
+
+      data = { type: event, url: callback, timestamp: timestamp }
+
       response = _post("/topics/#{topic}") do |r|
         r.headers['Content-Type'] = 'application/json'
         r.body = data.to_json
