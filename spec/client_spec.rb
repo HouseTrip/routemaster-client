@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'routemaster/client'
+require 'routemaster/topic'
 require 'webmock/rspec'
 
 describe Routemaster::Client do
@@ -208,7 +209,31 @@ describe Routemaster::Client do
   end
 
   describe '#monitor_topics' do
-    it 'passes'
+
+    let(:perform) { subject.monitor_topics }
+    let(:expected_result) do
+      [
+        {
+          name: 'widgets',
+          publisher: 'demo',
+          events: 12589
+        }
+      ]
+    end
+
+    before do
+      @stub = stub_request(
+        :get, %r{^https://#{options[:uuid]}:x@bus.example.com/topics$}
+      ).with { |r|
+        r.headers['Content-Type'] == 'application/json'
+      }.to_return {
+        { status: 200, body: expected_result.to_json }
+      }
+    end
+
+    it 'expects a collection of topics' do
+      expect(perform.map(&:attributes)).to eql(expected_result)
+    end
   end
 
   describe '#monitor_subscriptions' do

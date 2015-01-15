@@ -98,7 +98,7 @@ gem](https://github.com/krisleech/wisper#wisper).
 
 ```ruby
 client.monitor_topics
-#=> [ { name: 'widgets', publisher: 'demo', events: 12589 }, ...]
+#=> [ #<Routemaster::Topic:XXXX @name="widgets", @publisher="demo", @events=12589>, ...]
 
 client.monitor_subscriptions
 #=> [ {

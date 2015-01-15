@@ -1,5 +1,6 @@
 require 'routemaster/client/version'
 require 'routemaster/client/openssl'
+require 'routemaster/topic'
 require 'uri'
 require 'faraday'
 require 'json'
@@ -59,6 +60,20 @@ module Routemaster
       end
     end
 
+    def monitor_topics
+      response = _get('/topics') do |r|
+        r.headers['Content-Type'] = 'application/json'
+      end
+
+      unless response.success?
+        raise 'failed to connect to /topics'
+      end
+
+      JSON(response.body).map do |raw_topic|
+        Topic.new raw_topic
+      end
+    end
+
 
     private
 
@@ -112,6 +127,15 @@ module Routemaster
       retry
     end
 
+    def _get(path, &block)
+      retries ||= 5
+      _conn.get(path, &block)
+    rescue Net::HTTP::Persistent::Error => e
+      raise if (retries -= 1).zero?
+      puts "warning: retrying get to #{path} on #{e.class.name}: #{e.message} (#{retries})"
+      @_conn = nil
+      retry
+    end
 
     def _conn
       @_conn ||= Faraday.new(@_url) do |f|
