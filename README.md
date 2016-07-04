@@ -1,13 +1,13 @@
 # routemaster-client
 
-A Ruby API for the [Routemaster](https://github.com/HouseTrip/routemaster) event
+A Ruby API for the [Routemaster](https://github.com/mezis/routemaster) event
 bus.
 
 [![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client)
 &nbsp;
-[![Build](https://travis-ci.org/HouseTrip/routemaster-client.svg?branch=master)](https://travis-ci.org/HouseTrip/routemaster-client)
+[![Build](https://travis-ci.org/mezis/routemaster-client.svg?branch=master)](https://travis-ci.org/mezis/routemaster-client)
 &nbsp;
-[![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/HouseTrip/routemaster-client/frames/file/README.md)
+[![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/mezis/routemaster-client/frames/file/README.md)
 
 
 ## Installation
@@ -111,7 +111,7 @@ client.monitor_subscriptions
 
 ## Contributing
 
-1. Fork it ( http://github.com/HouseTrip/routemaster-client/fork )
+1. Fork it ( http://github.com/mezis/routemaster-client/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
