@@ -6,6 +6,7 @@ gemspec
 # just here to avoid a safety warning
 gem 'psych'
 
+# development/testing gems
 gem 'bundler'
 gem 'rake'
 gem 'guard-rspec'
