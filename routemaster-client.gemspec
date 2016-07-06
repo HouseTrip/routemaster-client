@@ -17,6 +17,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = %w(.)
 
   spec.add_runtime_dependency     'faraday', '>= 0.9.0'
-  spec.add_runtime_dependency     'net-http-persistent'
-  spec.add_runtime_dependency     'wisper', '>= 1.4.0'
+  spec.add_runtime_dependency     'net-http-persistent', '>= 2.9.4'
+  spec.add_runtime_dependency     'wisper', '>= 1.6.1'
 end
