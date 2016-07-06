@@ -45,7 +45,7 @@ describe Routemaster::Client do
       end
 
       it 'fails' do
-        expect { subject }.to raise_error
+        expect { subject }.to raise_error(Faraday::ConnectionFailed)
       end
 
       it 'passes if :lazy' do
@@ -58,13 +58,13 @@ describe Routemaster::Client do
       let(:pulse_response) { 500 }
 
       it 'fails if it does not get a successful heartbeat from the app' do
-        expect { subject }.to raise_error
+        expect { subject }.to raise_error(RuntimeError)
       end
     end
 
     it 'fails if the timeout value is not an integer' do
       options[:timeout] = 'timeout'
-      expect { subject }.to raise_error
+      expect { subject }.to raise_error(ArgumentError)
     end
   end
 
@@ -98,17 +98,17 @@ describe Routemaster::Client do
 
       it 'fails with a bad callback URL' do
         callback.replace 'http.foo.bar'
-        expect { perform }.to raise_error
+        expect { perform }.to raise_error(ArgumentError)
       end
 
       it 'fails with a non-SSL URL' do
         callback.replace 'http://example.com'
-        expect { perform }.to raise_error
+        expect { perform }.to raise_error(ArgumentError)
       end
 
       it 'fails with a bad topic name' do
         topic.replace 'foo123$bar'
-        expect { perform }.to raise_error
+        expect { perform }.to raise_error(ArgumentError)
       end
     end
 
@@ -151,7 +151,7 @@ describe Routemaster::Client do
         let(:timestamp) { 'foo' }
 
         it 'fails with non-numeric timestamp' do
-          expect { perform }.to raise_error
+          expect { perform }.to raise_error(ArgumentError)
         end
       end
     end
