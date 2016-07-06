@@ -1,11 +1,12 @@
 require 'spec_helper'
-require 'spec/support/rack_test'
+require 'rack/test'
 require 'routemaster/receiver'
 
 describe Routemaster::Receiver do
+  include Rack::Test::Methods
+
   let(:handler) { double 'handler', on_events: nil, on_events_received: true }
   let(:app) { described_class.new(fake_app, options) }
-  
   
   def perform
     post '/events', payload, 'CONTENT_TYPE' => 'application/json'
