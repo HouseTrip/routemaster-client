@@ -117,9 +117,9 @@ module Routemaster
       condition or raise ArgumentError.new(message)
     end
 
-    def _post(path, &block)
+    def _http(method, path, &block)
       retries ||= 5
-      _conn.post(path, &block)
+      _conn.send(method, path, &block)
     rescue Net::HTTP::Persistent::Error => e
       raise if (retries -= 1).zero?
       puts "warning: retrying post to #{path} on #{e.class.name}: #{e.message} (#{retries})"
@@ -127,14 +127,12 @@ module Routemaster
       retry
     end
 
+    def _post(path, &block)
+      _http(:post, path, &block)
+    end
+
     def _get(path, &block)
-      retries ||= 5
-      _conn.get(path, &block)
-    rescue Net::HTTP::Persistent::Error => e
-      raise if (retries -= 1).zero?
-      puts "warning: retrying get to #{path} on #{e.class.name}: #{e.message} (#{retries})"
-      @_conn = nil
-      retry
+      _http(:get, path, &block)
     end
 
     def _conn
