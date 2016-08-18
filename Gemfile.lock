@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    routemaster-client (1.2.1)
+    routemaster-client (1.2.2)
       faraday (>= 0.9.0)
       net-http-persistent (>= 2.9.4)
       wisper (>= 1.6.1)
