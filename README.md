@@ -1,13 +1,8 @@
-# routemaster-client
+## routemaster-client [![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client) [![Build](https://travis-ci.org/mezis/routemaster-client.svg?branch=master)](https://travis-ci.org/mezis/routemaster-client) [![Code Climate](https://codeclimate.com/github/mezis/routemaster-client/badges/gpa.svg)](https://codeclimate.com/github/mezis/routemaster-client) [![Test Coverage](https://codeclimate.com/github/mezis/routemaster-client/badges/coverage.svg)](https://codeclimate.com/github/mezis/routemaster-client/coverage) [![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/mezis/routemaster-client/frames/file/README.md)
 
 A Ruby API for the [Routemaster](https://github.com/mezis/routemaster) event
 bus.
 
-[![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client)
-&nbsp;
-[![Build](https://travis-ci.org/mezis/routemaster-client.svg?branch=master)](https://travis-ci.org/mezis/routemaster-client)
-&nbsp;
-[![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/mezis/routemaster-client/frames/file/README.md)
 
 
 ## Installation

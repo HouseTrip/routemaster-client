@@ -13,3 +13,5 @@ gem 'guard-rspec'
 gem 'webmock'
 gem 'pry-nav'
 gem 'rack-test'
+gem 'codeclimate-test-reporter', require: nil
+
