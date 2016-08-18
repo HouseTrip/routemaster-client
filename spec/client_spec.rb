@@ -108,7 +108,7 @@ describe Routemaster::Client do
 
       it 'fails with a bad topic name' do
         topic.replace 'foo123$bar'
-        expect { perform }.to raise_error(ArgumentError)
+        expect { perform }.to raise_error(ArgumentError, 'bad topic name: must only include letters and underscores')
       end
     end
 

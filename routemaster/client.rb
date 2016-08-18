@@ -92,7 +92,7 @@ module Routemaster
     end
 
     def _assert_valid_topic(topic)
-      _assert (topic =~ /^[a-z_]{1,32}$/), 'bad topic name'
+      _assert (topic =~ /^[a-z_]{1,64}$/), 'bad topic name: must only include letters and underscores'
     end
 
     def _assert_valid_timestamp(timestamp)
