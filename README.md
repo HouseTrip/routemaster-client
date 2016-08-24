@@ -1,6 +1,6 @@
-## routemaster-client [![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client) [![Build](https://travis-ci.org/mezis/routemaster-client.svg?branch=master)](https://travis-ci.org/mezis/routemaster-client) [![Code Climate](https://codeclimate.com/github/mezis/routemaster-client/badges/gpa.svg)](https://codeclimate.com/github/mezis/routemaster-client) [![Test Coverage](https://codeclimate.com/github/mezis/routemaster-client/badges/coverage.svg)](https://codeclimate.com/github/mezis/routemaster-client/coverage) [![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/mezis/routemaster-client/frames/file/README.md)
+## routemaster-client [![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client) [![Build](https://travis-ci.org/deliveroo/routemaster-client.svg?branch=master)](https://travis-ci.org/deliveroo/routemaster-client) [![Code Climate](https://codeclimate.com/github/deliveroo/routemaster-client/badges/gpa.svg)](https://codeclimate.com/github/deliveroo/routemaster-client) [![Test Coverage](https://codeclimate.com/github/deliveroo/routemaster-client/badges/coverage.svg)](https://codeclimate.com/github/deliveroo/routemaster-client/coverage) [![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/deliveroo/routemaster-client/frames/file/README.md)
 
-A Ruby API for the [Routemaster](https://github.com/mezis/routemaster) event
+A Ruby API for the [Routemaster](https://github.com/deliveroo/routemaster) event
 bus.
 
 
@@ -106,7 +106,7 @@ client.monitor_subscriptions
 
 ## Contributing
 
-1. Fork it ( http://github.com/mezis/routemaster-client/fork )
+1. Fork it ( http://github.com/deliveroo/routemaster-client/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
