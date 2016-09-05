@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Julien Letessier']
   spec.email         = ['julien.letessier@gmail.com']
   spec.summary       = %q{Client API for the Routemaster event bus}
-  spec.homepage      = 'http://github.com/mezis/routemaster-client'
+  spec.homepage      = 'http://github.com/deliveroo/routemaster-client'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
