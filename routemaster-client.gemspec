@@ -16,7 +16,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^spec/})
   spec.require_paths = %w(.)
 
+  spec.add_runtime_dependency     'typhoeus', '~> 1.1'
   spec.add_runtime_dependency     'faraday', '>= 0.9.0'
-  spec.add_runtime_dependency     'net-http-persistent', '>= 2.9.4'
-  spec.add_runtime_dependency     'wisper', '>= 1.6.1'
+  spec.add_runtime_dependency     'wisper', '~> 1.6.1'
+  spec.add_runtime_dependency     'oj', '~> 2.17'
 end

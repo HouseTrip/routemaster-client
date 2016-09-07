@@ -50,6 +50,12 @@ There are methods for the four canonical event types: `created`, `updated`,
 the publisher floods with `noop`s for all existing entities so subscribers can
 refresh their view of the domain.
 
+A timestamp argument may be passed (it will be set by the bus automatically
+otherwise); it must be an integer number of milliseconds since the UNIX Epoch:
+
+```ruby
+client.created('widgets', 'https://app.example.com/widgets/1', 1473080555409)
+```
 
 **Subscribe** to be notified about `widgets` and `kitten` at most 60 seconds after
 events, in batches of at most 500 events, to a given callback URL:

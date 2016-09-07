@@ -1,16 +1,20 @@
 require 'routemaster/client/version'
-require 'routemaster/client/openssl'
 require 'routemaster/topic'
 require 'uri'
-require 'faraday'
 require 'json'
+require 'faraday'
+require 'typhoeus'
+require 'typhoeus/adapters/faraday'
+require 'oj'
 
 module Routemaster
   class Client
+    
     def initialize(options = {})
       @_url = _assert_valid_url(options[:url])
       @_uuid = options[:uuid]
       @_timeout = options.fetch(:timeout, 1)
+      @_verify_ssl = options.fetch(:verify_ssl, true)
 
       _assert (options[:uuid] =~ /^[a-z0-9_-]{1,64}$/), 'uuid should be alpha'
       _assert_valid_timeout(@_timeout)
@@ -52,7 +56,7 @@ module Routemaster
 
       response = _post('/subscription') do |r|
         r.headers['Content-Type'] = 'application/json'
-        r.body = options.to_json
+        r.body = Oj.dump(_stringify_keys options)
       end
 
       unless response.success?
@@ -99,13 +103,21 @@ module Routemaster
         raise 'failed to connect to /topics'
       end
 
-      JSON(response.body).map do |raw_topic|
+      Oj.load(response.body).map do |raw_topic|
         Topic.new raw_topic
       end
     end
 
 
     private
+
+    def _stringify_keys(hash)
+      hash.dup.tap do |h|
+        h.keys.each do |k|
+          h[k.to_s] = h.delete(k)
+        end
+      end
+    end
 
     def _assert_valid_timeout(timeout)
       _assert (0..3_600_000).include?(timeout), 'bad timeout'
@@ -126,7 +138,7 @@ module Routemaster
     end
 
     def _assert_valid_timestamp(timestamp)
-      _assert timestamp.is_a?(Numeric), 'not a numeric number'
+      _assert timestamp.kind_of?(Integer), 'not an integer'
     end
 
     def _send_event(event, topic, callback, timestamp = nil)
@@ -138,7 +150,7 @@ module Routemaster
 
       response = _post("/topics/#{topic}") do |r|
         r.headers['Content-Type'] = 'application/json'
-        r.body = data.to_json
+        r.body = Oj.dump(_stringify_keys data)
       end
       fail "event rejected (#{response.status})" unless response.success?
     end
@@ -148,13 +160,7 @@ module Routemaster
     end
 
     def _http(method, path, &block)
-      retries ||= 5
       _conn.send(method, path, &block)
-    rescue Net::HTTP::Persistent::Error => e
-      raise if (retries -= 1).zero?
-      puts "warning: retrying post to #{path} on #{e.class.name}: #{e.message} (#{retries})"
-      @_conn = nil
-      retry
     end
 
     def _post(path, &block)
@@ -170,10 +176,10 @@ module Routemaster
     end
 
     def _conn
-      @_conn ||= Faraday.new(@_url) do |f|
+      @_conn ||= Faraday.new(@_url, ssl: { verify: @_verify_ssl }) do |f|
         f.request :retry, max: 2, interval: 100e-3, backoff_factor: 2
         f.request :basic_auth, @_uuid, 'x'
-        f.adapter :net_http_persistent
+        f.adapter :typhoeus
 
         f.options.timeout      = @_timeout
         f.options.open_timeout = @_timeout
