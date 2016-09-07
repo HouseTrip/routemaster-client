@@ -54,9 +54,39 @@ module Routemaster
         r.headers['Content-Type'] = 'application/json'
         r.body = options.to_json
       end
-      # $stderr.puts response.status
+
       unless response.success?
-        raise 'subscription rejected'
+        raise 'subscribe rejected'
+      end
+    end
+
+    def unsubscribe(*topics)
+      topics.each { |t| _assert_valid_topic(t) }
+
+      topics.each do |t|
+        response = _delete("/subscriber/topics/#{t}")
+
+        unless response.success?
+          raise 'unsubscribe rejected'
+        end
+      end
+    end
+
+    def unsubscribe_all
+      response = _delete('/subscriber')
+
+      unless response.success?
+        raise 'unsubscribe all rejected'
+      end
+    end
+
+    def delete_topic(topic)
+      _assert_valid_topic(topic)
+
+      response = _delete("/topics/#{topic}")
+
+      unless response.success?
+        raise 'failed to delete topic'
       end
     end
 
@@ -133,6 +163,10 @@ module Routemaster
 
     def _get(path, &block)
       _http(:get, path, &block)
+    end
+
+    def _delete(path, &block)
+      _http(:delete, path, &block)
     end
 
     def _conn

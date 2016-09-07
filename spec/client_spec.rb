@@ -231,6 +231,81 @@ describe Routemaster::Client do
     end
   end
 
+  describe '#unsubscribe' do
+    let(:perform) { subject.unsubscribe(*args) }
+    let(:args) {[
+      'widgets'
+    ]}
+
+    before do
+      @stub = stub_request(:delete, %r{https://bus.example.com/subscriber/topics/widgets}).
+      with(basic_auth: [options[:uuid], 'x'])
+    end
+
+    it 'passes with correct arguments' do
+      expect { perform }.not_to raise_error
+      expect(@stub).to have_been_requested
+    end
+
+    it 'fails with a bad topic' do
+      args.replace ['foo123%bar']
+      expect { perform }.to raise_error(ArgumentError)
+    end
+
+    it 'fails on HTTP error' do
+      @stub.to_return(status: 500)
+      expect { perform }.to raise_error(RuntimeError)
+    end
+  end
+
+
+  describe '#unsubscribe_all' do
+    let(:perform) { subject.unsubscribe_all }
+
+    before do
+      @stub = stub_request(:delete, %r{https://bus.example.com/subscriber}).
+      with(basic_auth: [options[:uuid], 'x'])
+    end
+
+    it 'passes with correct arguments' do
+      expect { perform }.not_to raise_error
+      expect(@stub).to have_been_requested
+    end
+
+    it 'fails on HTTP error' do
+      @stub.to_return(status: 500)
+      expect { perform }.to raise_error(RuntimeError)
+    end
+  end
+
+  describe '#delete_topic' do
+    let(:perform) { subject.delete_topic(*args) }
+    let(:args) {[
+      'widgets'
+    ]}
+
+    before do
+      @stub = stub_request(:delete, %r{https://bus.example.com/topics/widgets}).
+      with(basic_auth: [options[:uuid], 'x'])
+    end
+
+    it 'passes with correct arguments' do
+      expect { perform }.not_to raise_error
+      expect(@stub).to have_been_requested
+    end
+
+    it 'fails with a bad topic' do
+      args.replace ['foo123%bar']
+      expect { perform }.to raise_error(ArgumentError)
+    end
+
+    it 'fails on HTTP error' do
+      @stub.to_return(status: 500)
+      expect { perform }.to raise_error(RuntimeError)
+    end
+  end
+
+
   describe '#monitor_topics' do
 
     let(:perform) { subject.monitor_topics }

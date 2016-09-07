@@ -51,7 +51,7 @@ the publisher floods with `noop`s for all existing entities so subscribers can
 refresh their view of the domain.
 
 
-**Register** to be notified about `widgets` and `kitten` at most 60 seconds after
+**Subscribe** to be notified about `widgets` and `kitten` at most 60 seconds after
 events, in batches of at most 500 events, to a given callback URL:
 
 ```ruby
@@ -87,6 +87,24 @@ use Routemaster::Receiver, {
 
 This relies on the excellent event bus from the [wisper
 gem](https://github.com/krisleech/wisper#wisper).
+
+**Unsubscribe** from a single topic:
+
+```ruby
+client.unsubscribe('widgets')
+```
+
+**Unsubscribe** from all topics:
+
+```ruby
+client.unsubscribe_all
+```
+
+**Delete** a topic (only possible if you're the emitter for this topic):
+
+```ruby
+client.delete_topic('widgets')
+```
 
 
 **Monitor** the status of topics and subscriptions:
