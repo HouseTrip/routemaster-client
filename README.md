@@ -1,13 +1,8 @@
-# routemaster-client
+## routemaster-client [![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client) [![Build](https://travis-ci.org/deliveroo/routemaster-client.svg?branch=master)](https://travis-ci.org/deliveroo/routemaster-client) [![Code Climate](https://codeclimate.com/github/deliveroo/routemaster-client/badges/gpa.svg)](https://codeclimate.com/github/deliveroo/routemaster-client) [![Test Coverage](https://codeclimate.com/github/deliveroo/routemaster-client/badges/coverage.svg)](https://codeclimate.com/github/deliveroo/routemaster-client/coverage) [![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/deliveroo/routemaster-client/frames/file/README.md)
 
-A Ruby API for the [Routemaster](https://github.com/HouseTrip/routemaster) event
+A Ruby API for the [Routemaster](https://github.com/deliveroo/routemaster) event
 bus.
 
-[![Version](https://badge.fury.io/rb/routemaster-client.svg)](https://rubygems.org/gems/routemaster-client)
-&nbsp;
-[![Build](https://travis-ci.org/HouseTrip/routemaster-client.svg?branch=master)](https://travis-ci.org/HouseTrip/routemaster-client)
-&nbsp;
-[![Docs](http://img.shields.io/badge/API%20docs-rubydoc.info-blue.svg)](http://rubydoc.info/github/HouseTrip/routemaster-client/frames/file/README.md)
 
 
 ## Installation
@@ -55,8 +50,14 @@ There are methods for the four canonical event types: `created`, `updated`,
 the publisher floods with `noop`s for all existing entities so subscribers can
 refresh their view of the domain.
 
+A timestamp argument may be passed (it will be set by the bus automatically
+otherwise); it must be an integer number of milliseconds since the UNIX Epoch:
 
-**Register** to be notified about `widgets` and `kitten` at most 60 seconds after
+```ruby
+client.created('widgets', 'https://app.example.com/widgets/1', 1473080555409)
+```
+
+**Subscribe** to be notified about `widgets` and `kitten` at most 60 seconds after
 events, in batches of at most 500 events, to a given callback URL:
 
 ```ruby
@@ -93,6 +94,24 @@ use Routemaster::Receiver, {
 This relies on the excellent event bus from the [wisper
 gem](https://github.com/krisleech/wisper#wisper).
 
+**Unsubscribe** from a single topic:
+
+```ruby
+client.unsubscribe('widgets')
+```
+
+**Unsubscribe** from all topics:
+
+```ruby
+client.unsubscribe_all
+```
+
+**Delete** a topic (only possible if you're the emitter for this topic):
+
+```ruby
+client.delete_topic('widgets')
+```
+
 
 **Monitor** the status of topics and subscriptions:
 
@@ -111,7 +130,7 @@ client.monitor_subscriptions
 
 ## Contributing
 
-1. Fork it ( http://github.com/HouseTrip/routemaster-client/fork )
+1. Fork it ( http://github.com/deliveroo/routemaster-client/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
