@@ -1,12 +1,11 @@
 language: ruby
 cache: bundler
 rvm:
-  - 2.0.0
-  - 2.1.9
   - 2.2.5
   - 2.3.1
 script:
 - bundle exec rspec
+- bundle exec codeclimate-test-reporter
 addons:
   code_climate:
     repo_token: b1d80c686f42ee5eb66895c4b0ac5c0d978e964d4700eae35aa0138f5a650c02

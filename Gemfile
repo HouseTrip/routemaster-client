@@ -11,7 +11,8 @@ gem 'bundler'
 gem 'rake'
 gem 'guard-rspec'
 gem 'webmock'
-gem 'pry-nav'
+gem 'pry-byebug'
 gem 'rack-test'
+gem 'simplecov'
 gem 'codeclimate-test-reporter', require: nil
 
