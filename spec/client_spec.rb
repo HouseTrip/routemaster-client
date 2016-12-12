@@ -39,6 +39,11 @@ describe Routemaster::Client do
       expect { subject }.to raise_error(ArgumentError)
     end
 
+    it 'fails with an invalid worker_type' do
+      options[:worker_type] = :jeff
+      expect { subject }.to raise_error(ArgumentError)
+    end
+
     context 'when connection fails' do
       before do
         stub_request(:any, %r{^https://bus.example.com}).

@@ -1,5 +1,7 @@
 require 'routemaster/client/version'
+require 'routemaster/client/connection'
 require 'routemaster/topic'
+require 'routemaster/workers'
 require 'uri'
 require 'json'
 require 'faraday'
@@ -9,17 +11,21 @@ require 'oj'
 
 module Routemaster
   class Client
-    
+
     def initialize(options = {})
-      @_url = _assert_valid_url(options[:url])
-      @_uuid = options[:uuid]
-      @_timeout = options.fetch(:timeout, 1)
-      @_verify_ssl = options.fetch(:verify_ssl, true)
+      @_options = options.tap do |o|
+        o[:timeout] ||= 1
+        o[:worker_type] ||= :null
+      end
 
-      _assert (options[:uuid] =~ /^[a-z0-9_-]{1,64}$/), 'uuid should be alpha'
-      _assert_valid_timeout(@_timeout)
+      _assert_valid_url(@_options[:url])
+      _assert_valid_worker_type(@_options.fetch(:worker_type, :null))
+      _assert (@_options[:uuid] =~ /^[a-z0-9_-]{1,64}$/), 'uuid should be alpha'
+      _assert_valid_timeout(@_options[:timeout])
 
-      unless options[:lazy]
+      @_worker_type = @_options.fetch(:worker_type)
+
+      unless @_options[:lazy]
         _conn.get('/pulse').tap do |response|
           raise 'cannot connect to bus' unless response.success?
         end
@@ -53,22 +59,14 @@ module Routemaster
 
       options[:topics].each { |t| _assert_valid_topic(t) }
       _assert_valid_url(options[:callback])
-
-      response = _post('/subscription') do |r|
-        r.headers['Content-Type'] = 'application/json'
-        r.body = Oj.dump(_stringify_keys options)
-      end
-
-      unless response.success?
-        raise 'subscribe rejected'
-      end
+      _conn.subscribe(options)
     end
 
     def unsubscribe(*topics)
       topics.each { |t| _assert_valid_topic(t) }
 
       topics.each do |t|
-        response = _delete("/subscriber/topics/#{t}")
+        response = _conn.delete("/subscriber/topics/#{t}")
 
         unless response.success?
           raise 'unsubscribe rejected'
@@ -77,7 +75,7 @@ module Routemaster
     end
 
     def unsubscribe_all
-      response = _delete('/subscriber')
+      response = _conn.delete('/subscriber')
 
       unless response.success?
         raise 'unsubscribe all rejected'
@@ -87,7 +85,7 @@ module Routemaster
     def delete_topic(topic)
       _assert_valid_topic(topic)
 
-      response = _delete("/topics/#{topic}")
+      response = _conn.delete("/topics/#{topic}")
 
       unless response.success?
         raise 'failed to delete topic'
@@ -95,7 +93,7 @@ module Routemaster
     end
 
     def monitor_topics
-      response = _get('/topics') do |r|
+      response = _conn.get('/topics') do |r|
         r.headers['Content-Type'] = 'application/json'
       end
 
@@ -108,16 +106,7 @@ module Routemaster
       end
     end
 
-
     private
-
-    def _stringify_keys(hash)
-      hash.dup.tap do |h|
-        h.keys.each do |k|
-          h[k.to_s] = h.delete(k)
-        end
-      end
-    end
 
     def _assert_valid_timeout(timeout)
       _assert (0..3_600_000).include?(timeout), 'bad timeout'
@@ -141,49 +130,29 @@ module Routemaster
       _assert timestamp.kind_of?(Integer), 'not an integer'
     end
 
+    def _assert_valid_worker_type(worker_type)
+      workers = Routemaster::Workers::WORKER_NAMES
+      _assert workers.include?(worker_type), "unknown worker type, must be one of #{workers.map{ |w| ":#{w}" }.join(", ")}"
+      worker_type
+    end
+
     def _send_event(event, topic, callback, timestamp = nil)
       _assert_valid_url(callback)
       _assert_valid_topic(topic)
       _assert_valid_timestamp(timestamp) if timestamp
-
-      data = { type: event, url: callback, timestamp: timestamp }
-
-      response = _post("/topics/#{topic}") do |r|
-        r.headers['Content-Type'] = 'application/json'
-        r.body = Oj.dump(_stringify_keys data)
-      end
-      fail "event rejected (#{response.status})" unless response.success?
+      _worker.send_event(event, topic, callback, timestamp)
     end
 
     def _assert(condition, message)
       condition or raise ArgumentError.new(message)
     end
 
-    def _http(method, path, &block)
-      _conn.send(method, path, &block)
-    end
-
-    def _post(path, &block)
-      _http(:post, path, &block)
-    end
-
-    def _get(path, &block)
-      _http(:get, path, &block)
-    end
-
-    def _delete(path, &block)
-      _http(:delete, path, &block)
-    end
-
     def _conn
-      @_conn ||= Faraday.new(@_url, ssl: { verify: @_verify_ssl }) do |f|
-        f.request :retry, max: 2, interval: 100e-3, backoff_factor: 2
-        f.request :basic_auth, @_uuid, 'x'
-        f.adapter :typhoeus
+      @_conn ||= Client::Connection.new(@_options)
+    end
 
-        f.options.timeout      = @_timeout
-        f.options.open_timeout = @_timeout
-      end
+    def _worker
+      @_worker ||= Routemaster::Workers::MAP[@_worker_type].configure(@_options)
     end
   end
 end
