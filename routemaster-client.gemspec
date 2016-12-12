@@ -9,14 +9,15 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Julien Letessier']
   spec.email         = ['julien.letessier@gmail.com']
   spec.summary       = %q{Client API for the Routemaster event bus}
-  spec.homepage      = 'http://github.com/HouseTrip/routemaster_client'
+  spec.homepage      = 'http://github.com/deliveroo/routemaster-client'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
   spec.test_files    = spec.files.grep(%r{^spec/})
   spec.require_paths = %w(.)
 
+  spec.add_runtime_dependency     'typhoeus', '~> 1.1'
   spec.add_runtime_dependency     'faraday', '>= 0.9.0'
-  spec.add_runtime_dependency     'net-http-persistent'
-  spec.add_runtime_dependency     'wisper', '>= 1.4.0'
+  spec.add_runtime_dependency     'wisper', '~> 1.6.1'
+  spec.add_runtime_dependency     'oj', '~> 2.17'
 end

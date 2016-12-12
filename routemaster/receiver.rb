@@ -23,7 +23,8 @@ module Routemaster
         throw :forward unless _intercept_endpoint?(env)
         return [401, {}, []] unless _has_auth?(env)
         return [403, {}, []] unless _valid_auth?(env)
-        return [400, {}, []] unless payload = _extract_payload(env)
+        payload = _extract_payload(env)
+        return [400, {}, []] unless payload
 
         @handler.on_events(payload) if @handler
         publish(:events_received, payload)

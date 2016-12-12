@@ -1,21 +1,31 @@
 require 'routemaster/client/version'
-require 'routemaster/client/openssl'
+require 'routemaster/client/connection'
 require 'routemaster/topic'
+require 'routemaster/workers'
 require 'uri'
-require 'faraday'
 require 'json'
+require 'faraday'
+require 'typhoeus'
+require 'typhoeus/adapters/faraday'
+require 'oj'
 
 module Routemaster
   class Client
+
     def initialize(options = {})
-      @_url = _assert_valid_url(options[:url])
-      @_uuid = options[:uuid]
-      @_timeout = options.fetch(:timeout, 1)
+      @_options = options.tap do |o|
+        o[:timeout] ||= 1
+        o[:worker_type] ||= :null
+      end
 
-      _assert (options[:uuid] =~ /^[a-z0-9_-]{1,64}$/), 'uuid should be alpha'
-      _assert_valid_timeout(@_timeout)
+      _assert_valid_url(@_options[:url])
+      _assert_valid_worker_type(@_options.fetch(:worker_type, :null))
+      _assert (@_options[:uuid] =~ /^[a-z0-9_-]{1,64}$/), 'uuid should be alpha'
+      _assert_valid_timeout(@_options[:timeout])
 
-      unless options[:lazy]
+      @_worker_type = @_options.fetch(:worker_type)
+
+      unless @_options[:lazy]
         _conn.get('/pulse').tap do |response|
           raise 'cannot connect to bus' unless response.success?
         end
@@ -49,19 +59,41 @@ module Routemaster
 
       options[:topics].each { |t| _assert_valid_topic(t) }
       _assert_valid_url(options[:callback])
+      _conn.subscribe(options)
+    end
 
-      response = _post('/subscription') do |r|
-        r.headers['Content-Type'] = 'application/json'
-        r.body = options.to_json
+    def unsubscribe(*topics)
+      topics.each { |t| _assert_valid_topic(t) }
+
+      topics.each do |t|
+        response = _conn.delete("/subscriber/topics/#{t}")
+
+        unless response.success?
+          raise 'unsubscribe rejected'
+        end
       end
-      # $stderr.puts response.status
+    end
+
+    def unsubscribe_all
+      response = _conn.delete('/subscriber')
+
       unless response.success?
-        raise 'subscription rejected'
+        raise 'unsubscribe all rejected'
+      end
+    end
+
+    def delete_topic(topic)
+      _assert_valid_topic(topic)
+
+      response = _conn.delete("/topics/#{topic}")
+
+      unless response.success?
+        raise 'failed to delete topic'
       end
     end
 
     def monitor_topics
-      response = _get('/topics') do |r|
+      response = _conn.get('/topics') do |r|
         r.headers['Content-Type'] = 'application/json'
       end
 
@@ -69,11 +101,10 @@ module Routemaster
         raise 'failed to connect to /topics'
       end
 
-      JSON(response.body).map do |raw_topic|
+      Oj.load(response.body).map do |raw_topic|
         Topic.new raw_topic
       end
     end
-
 
     private
 
@@ -92,60 +123,36 @@ module Routemaster
     end
 
     def _assert_valid_topic(topic)
-      _assert (topic =~ /^[a-z_]{1,32}$/), 'bad topic name'
+      _assert (topic =~ /^[a-z_]{1,64}$/), 'bad topic name: must only include letters and underscores'
     end
 
     def _assert_valid_timestamp(timestamp)
-      _assert timestamp.is_a?(Numeric), 'not a numeric number'
+      _assert timestamp.kind_of?(Integer), 'not an integer'
+    end
+
+    def _assert_valid_worker_type(worker_type)
+      workers = Routemaster::Workers::WORKER_NAMES
+      _assert workers.include?(worker_type), "unknown worker type, must be one of #{workers.map{ |w| ":#{w}" }.join(", ")}"
+      worker_type
     end
 
     def _send_event(event, topic, callback, timestamp = nil)
       _assert_valid_url(callback)
       _assert_valid_topic(topic)
       _assert_valid_timestamp(timestamp) if timestamp
-
-      data = { type: event, url: callback, timestamp: timestamp }
-
-      response = _post("/topics/#{topic}") do |r|
-        r.headers['Content-Type'] = 'application/json'
-        r.body = data.to_json
-      end
-      fail "event rejected (#{response.status})" unless response.success?
+      _worker.send_event(event, topic, callback, timestamp)
     end
 
     def _assert(condition, message)
       condition or raise ArgumentError.new(message)
     end
 
-    def _post(path, &block)
-      retries ||= 5
-      _conn.post(path, &block)
-    rescue Net::HTTP::Persistent::Error => e
-      raise if (retries -= 1).zero?
-      puts "warning: retrying post to #{path} on #{e.class.name}: #{e.message} (#{retries})"
-      @_conn = nil
-      retry
-    end
-
-    def _get(path, &block)
-      retries ||= 5
-      _conn.get(path, &block)
-    rescue Net::HTTP::Persistent::Error => e
-      raise if (retries -= 1).zero?
-      puts "warning: retrying get to #{path} on #{e.class.name}: #{e.message} (#{retries})"
-      @_conn = nil
-      retry
-    end
-
     def _conn
-      @_conn ||= Faraday.new(@_url) do |f|
-        f.request :retry, max: 2, interval: 100e-3, backoff_factor: 2
-        f.request :basic_auth, @_uuid, 'x'
-        f.adapter :net_http_persistent
+      @_conn ||= Client::Connection.new(@_options)
+    end
 
-        f.options.timeout      = @_timeout
-        f.options.open_timeout = @_timeout
-      end
+    def _worker
+      @_worker ||= Routemaster::Workers::MAP[@_worker_type].configure(@_options)
     end
   end
 end
