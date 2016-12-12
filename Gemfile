@@ -15,4 +15,5 @@ gem 'pry-byebug'
 gem 'rack-test'
 gem 'simplecov'
 gem 'codeclimate-test-reporter', require: nil
+gem 'sidekiq'
 

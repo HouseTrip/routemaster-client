@@ -1,5 +1,5 @@
 module Routemaster::Workers
-  WORKER_NAMES = [:null]
+  WORKER_NAMES = [:null, :sidekiq]
 
   WORKER_NAMES.each do |wn|
     autoload wn.to_s.capitalize.to_sym, "routemaster/workers/#{wn}"
